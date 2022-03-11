@@ -1,28 +1,25 @@
 import { useState } from 'react'
+
 import logo from './logo.svg'
 import './App.css'
 
-import Counter from './components/Counter'
-
 function App() {
-  const [count, setCount] = useState(0)
-
-  function updateCount(direction) {
-    if (direction == 'up') {
-      setCount(count => count + 1)
-    }
-
-    if (direction == 'down') {
-      setCount(count => count - 1)
-    }
-  }
+  const [todos, setTodos] = useState([
+    { id: 1, title: 'Go out', isComplete: true },
+    { id: 2, title: 'Walk dog', isComplete: false },
+    { id: 3, title: 'Eat dinner', isComplete: false }
+  ])
 
   return (
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>Hello Vite + React!</p>
-        <Counter/>
+        <ul>
+          {todos.map((todo, key) => (
+            <li key={key}>{ todo.title }</li>
+          ))}
+        </ul>
       </header>
     </div>
   )
