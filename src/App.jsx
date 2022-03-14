@@ -1,23 +1,22 @@
-import { useState } from 'react'
-
 import NoTodos from './components/NoTodos'
 import TodoForm from './components/TodoForm'
+import useToggle from './hooks/useToggle'
+import useLocalStorage from './hooks/useLocalStorage'
 
 import './App.css'
 import TodoList from './components/TodoList'
 import { useRef, useEffect } from 'react'
 
 function App() {
-  const [name, setName] = useState('')
+  const [name, setName] = useLocalStorage('name', '')
+  
   const nameInputEl = useRef(null)
 
-  const [todos, setTodos] = useState([
-    { id: 1, title: 'Go out', isComplete: true, isEditing: false },
-    { id: 2, title: 'Walk dog', isComplete: false, isEditing: false },
-    { id: 3, title: 'Eat dinner', isComplete: false, isEditing: false }
-  ])
+  const [isFeatureOneVisbible, setFeatureOneVisibile] = useToggle(true)
+  const [isFeatureTwoVisbible, setFeatureTwoVisibile] = useToggle(true)
 
-  const [idForTodo, setIdForTodo] = useState(4)
+  const [todos, setTodos] = useLocalStorage('todos', [])
+  const [idForTodo, setIdForTodo] = useLocalStorage('idForTodo', 1)
 
   function addTodo(todo) {
     setTodos([...todos, {
@@ -113,6 +112,10 @@ function App() {
     }
   }, [])
 
+  function handleNameInput(event) {
+    setName(event.target.value)
+  }
+
   return (
     <div className="App">
       <form action="#">
@@ -121,7 +124,7 @@ function App() {
           placeholder='What is your name?'
           value={name}
           ref={nameInputEl}
-          onChange={event => setName(event.target.value)}
+          onChange={handleNameInput}
         />
       </form>
 
@@ -129,7 +132,16 @@ function App() {
         <p>Hello, { name }</p>
       }
 
-      <TodoForm addTodo={addTodo}/>
+      <button onClick={setFeatureOneVisibile}>Features One Toggle</button>
+      <button onClick={setFeatureTwoVisibile}>Features Two Toggle</button>
+
+      {isFeatureOneVisbible && (
+        <TodoForm addTodo={addTodo}/>
+      )}
+
+      {isFeatureTwoVisbible && (
+        <p>Feature two goes here bro</p>
+      )}
 
       {todos.length > 0 ? (
         <TodoList
