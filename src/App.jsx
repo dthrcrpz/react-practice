@@ -1,7 +1,10 @@
 import { useState } from 'react'
 
-import logo from './logo.svg'
+import NoTodos from './components/NoTodos'
+import TodoForm from './components/TodoForm'
+
 import './App.css'
+import TodoList from './components/TodoList'
 
 function App() {
   const [todos, setTodos] = useState([
@@ -10,33 +13,21 @@ function App() {
     { id: 3, title: 'Eat dinner', isComplete: false, isEditing: false }
   ])
 
-  const [todoInput, setTodoInput] = useState('aaa')
   const [idForTodo, setIdForTodo] = useState(4)
 
-  function addTodo(event) {
-    event.preventDefault()
-
-    if (todoInput.trim().length == 0) {
-      return
-    }
-
+  function addTodo(todo) {
     setTodos([...todos, {
       id: idForTodo,
-      title: todoInput,
+      title: todo,
       isComplete: false
     }])
 
-    setTodoInput('')
     setIdForTodo(prevId => prevId + 1)
   }
   
   function deleteTodo(id) {
     console.log(`deleting todo ${id}`)
     setTodos([...todos].filter(todo => todo.id != id))
-  }
-
-  function handleInput(event) {
-    setTodoInput(event.target.value)
   }
 
   function toggleTodo(id) {
@@ -83,38 +74,19 @@ function App() {
 
   return (
     <div className="App">
-      <form onSubmit={addTodo}>
-        <input type="text" placeholder="Task" value={todoInput} onChange={handleInput}/>
-        <button>Add</button>
-      </form>
+      <TodoForm addTodo={addTodo}/>
 
-      <ul>
-        {todos.map((todo, key) => (
-          <li key={key} className={`todo ${todo.isComplete ? 'complete' : ''}`}>
-            {!todo.isEditing ? (
-              <div>
-                <input type="checkbox" onChange={() => toggleTodo(todo.id)} checked={todo.isComplete ? true : false}/>
-                <label onDoubleClick={() => markAsEditing(todo.id)}>{ todo.title }</label>
-                <button onClick={() => deleteTodo(todo.id)}>Delete</button>
-              </div>
-            ) : (
-              <input
-                autoFocus
-                type="text"
-                defaultValue={todo.title}
-                onBlur={(event) => updateTodo(event, todo.id)}
-                onKeyDown={(event) => {
-                  if (event.key == 'Enter') {
-                    updateTodo(event, todo.id)
-                  } else if (event.key == 'Escape') {
-                    markAsEditing(todo.id)
-                  }
-                }}
-              />
-            )}
-          </li>
-        ))}
-      </ul>
+      {todos.length > 0 ? (
+        <TodoList
+          todos={todos}
+          toggleTodo={toggleTodo}
+          markAsEditing={markAsEditing}
+          updateTodo={updateTodo}
+          deleteTodo={deleteTodo}
+        />
+      ) : (
+        <NoTodos/>
+      )}
     </div>
   )
 }
