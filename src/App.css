@@ -1,0 +1,8 @@
+.complete {
+    color: red
+}
+
+label {
+    cursor: pointer;
+    user-select: none;
+}

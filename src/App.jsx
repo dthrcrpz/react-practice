@@ -5,9 +5,9 @@ import './App.css'
 
 function App() {
   const [todos, setTodos] = useState([
-    { id: 1, title: 'Go out', isComplete: true },
-    { id: 2, title: 'Walk dog', isComplete: false },
-    { id: 3, title: 'Eat dinner', isComplete: false }
+    { id: 1, title: 'Go out', isComplete: true, isEditing: false },
+    { id: 2, title: 'Walk dog', isComplete: false, isEditing: false },
+    { id: 3, title: 'Eat dinner', isComplete: false, isEditing: false }
   ])
 
   const [todoInput, setTodoInput] = useState('aaa')
@@ -39,6 +39,47 @@ function App() {
     setTodoInput(event.target.value)
   }
 
+  function toggleTodo(id) {
+    const updatedTodos = todos.map(todo => {
+      if (todo.id == id) {
+        todo.isComplete = !todo.isComplete
+      }
+
+      return todo
+    })
+
+    setTodos(updatedTodos)
+  }
+  
+  function markAsEditing(id) {
+    const updatedTodos = todos.map(todo => {
+      if (todo.id == id) {
+        todo.isEditing = !todo.isEditing
+      }
+
+      return todo
+    })
+
+    setTodos(updatedTodos)
+  }
+
+  function updateTodo(event, id) {
+    const updatedTodos = todos.map(todo => {
+      if (todo.id == id) {
+        if (event.target.value.trim().length == 0) {
+          todo.isEditing = false
+          return todo
+        }
+
+        todo.title = event.target.value
+        todo.isEditing = false
+      }
+
+      return todo
+    })
+
+    setTodos(updatedTodos)
+  }
 
   return (
     <div className="App">
@@ -49,7 +90,29 @@ function App() {
 
       <ul>
         {todos.map((todo, key) => (
-          <li key={key}>{ todo.title } <button onClick={() => deleteTodo(todo.id)}>Delete</button></li>
+          <li key={key} className={`todo ${todo.isComplete ? 'complete' : ''}`}>
+            {!todo.isEditing ? (
+              <div>
+                <input type="checkbox" onChange={() => toggleTodo(todo.id)} checked={todo.isComplete ? true : false}/>
+                <label onDoubleClick={() => markAsEditing(todo.id)}>{ todo.title }</label>
+                <button onClick={() => deleteTodo(todo.id)}>Delete</button>
+              </div>
+            ) : (
+              <input
+                autoFocus
+                type="text"
+                defaultValue={todo.title}
+                onBlur={(event) => updateTodo(event, todo.id)}
+                onKeyDown={(event) => {
+                  if (event.key == 'Enter') {
+                    updateTodo(event, todo.id)
+                  } else if (event.key == 'Escape') {
+                    markAsEditing(todo.id)
+                  }
+                }}
+              />
+            )}
+          </li>
         ))}
       </ul>
     </div>
