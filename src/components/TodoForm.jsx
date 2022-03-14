@@ -1,11 +1,8 @@
-import { useState } from 'react'
-import propTypes from 'prop-types'
-
-TodoForm.propTypes = {
-  addTodo: propTypes.func
-}
+import { useState, useContext } from 'react'
+import { TodosContext } from '../context/TodosContext'
 
 function TodoForm(props) {
+  const { todos, setTodos, idForTodo, setIdForTodo } = useContext(TodosContext)
   const [todoInput, setTodoInput] = useState('')
 
   function handleInput(event) {
@@ -19,7 +16,13 @@ function TodoForm(props) {
       return
     }
 
-    props.addTodo(todoInput)
+    setTodos([...todos, {
+      id: idForTodo,
+      title: todoInput,
+      isComplete: false
+    }])
+
+    setIdForTodo(prevId => prevId + 1)
 
     setTodoInput('')
   }

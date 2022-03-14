@@ -1,22 +1,86 @@
-import propTypes from "prop-types"
-import { useState } from "react"
+import { useState, useContext } from "react"
+import { TodosContext } from "../context/TodosContext"
 import TodoFilters from "./TodoFilters"
 import TodoItemsRemaining from "./TodoItemsRemaining"
 
-TodoList.propTypes = {
-  todos: propTypes.array.isRequired,
-  toggleTodo: propTypes.func.isRequired,
-  markAsEditing: propTypes.func.isRequired,
-  updateTodo: propTypes.func.isRequired,
-  deleteTodo: propTypes.func.isRequired,
-  remaining: propTypes.func.isRequired,
-  completeAllTodos: propTypes.func.isRequired,
-  deleteCompleted: propTypes.func.isRequired,
-  todosFiltered: propTypes.func.isRequired
-}
-
-function TodoList({ todos, toggleTodo, markAsEditing, updateTodo, deleteTodo, remaining, completeAllTodos, deleteCompleted, todosFiltered }) {
+function TodoList() {
   const [filter, setFilter] = useState('all')
+  const { todos, setTodos } = useContext(TodosContext)
+
+  function markAsEditing(id) {
+    const updatedTodos = todos.map(todo => {
+      if (todo.id == id) {
+        todo.isEditing = !todo.isEditing
+      }
+
+      return todo
+    })
+
+    setTodos(updatedTodos)
+  }
+
+  function updateTodo(event, id) {
+    const updatedTodos = todos.map(todo => {
+      if (todo.id == id) {
+        if (event.target.value.trim().length == 0) {
+          todo.isEditing = false
+          return todo
+        }
+
+        todo.title = event.target.value
+        todo.isEditing = false
+      }
+
+      return todo
+    })
+
+    setTodos(updatedTodos)
+  }
+
+  function remaining() {
+    return todos.filter(todo => !todo.isComplete).length
+  }
+
+  function completeAllTodos() {
+    const updatedTodos = todos.map(todo => {
+      todo.isComplete = true
+
+      return todo
+    })
+
+    setTodos(updatedTodos)
+  }
+
+  function toggleTodo(id) {
+    const updatedTodos = todos.map(todo => {
+      if (todo.id == id) {
+        todo.isComplete = !todo.isComplete
+      }
+
+      return todo
+    })
+
+    setTodos(updatedTodos)
+  }
+
+  function deleteTodo(id) {
+    console.log(`deleting todo ${id}`)
+    setTodos([...todos].filter(todo => todo.id != id))
+  }
+
+  function deleteCompleted() {
+    setTodos([...todos].filter(todo => !todo.isComplete))
+  }
+
+  function todosFiltered(filter) {
+    if (filter == 'all') {
+      return todos
+    } else if (filter == 'active') {
+      return todos.filter(todo => !todo.isComplete)
+    } else if (filter == 'completed') {
+      return todos.filter(todo => todo.isComplete)
+    }
+  }
 
   return (
     <>
