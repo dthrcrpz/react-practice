@@ -5,8 +5,12 @@ import TodoForm from './components/TodoForm'
 
 import './App.css'
 import TodoList from './components/TodoList'
+import { useRef, useEffect } from 'react'
 
 function App() {
+  const [name, setName] = useState('')
+  const nameInputEl = useRef(null)
+
   const [todos, setTodos] = useState([
     { id: 1, title: 'Go out', isComplete: true, isEditing: false },
     { id: 2, title: 'Walk dog', isComplete: false, isEditing: false },
@@ -100,8 +104,31 @@ function App() {
     }
   }
 
+  useEffect(() => {
+    console.log('use effect running')
+    nameInputEl.current.focus()
+
+    return function cleanup() {
+      // console.log('cleaning up');
+    }
+  }, [])
+
   return (
     <div className="App">
+      <form action="#">
+        <input
+          type="text"
+          placeholder='What is your name?'
+          value={name}
+          ref={nameInputEl}
+          onChange={event => setName(event.target.value)}
+        />
+      </form>
+
+      {name && 
+        <p>Hello, { name }</p>
+      }
+
       <TodoForm addTodo={addTodo}/>
 
       {todos.length > 0 ? (
