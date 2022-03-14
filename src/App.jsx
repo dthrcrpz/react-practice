@@ -10,17 +10,48 @@ function App() {
     { id: 3, title: 'Eat dinner', isComplete: false }
   ])
 
+  const [todoInput, setTodoInput] = useState('aaa')
+  const [idForTodo, setIdForTodo] = useState(4)
+
+  function addTodo(event) {
+    event.preventDefault()
+
+    if (todoInput.trim().length == 0) {
+      return
+    }
+
+    setTodos([...todos, {
+      id: idForTodo,
+      title: todoInput,
+      isComplete: false
+    }])
+
+    setTodoInput('')
+    setIdForTodo(prevId => prevId + 1)
+  }
+  
+  function deleteTodo(id) {
+    console.log(`deleting todo ${id}`)
+    setTodos([...todos].filter(todo => todo.id != id))
+  }
+
+  function handleInput(event) {
+    setTodoInput(event.target.value)
+  }
+
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>Hello Vite + React!</p>
-        <ul>
-          {todos.map((todo, key) => (
-            <li key={key}>{ todo.title }</li>
-          ))}
-        </ul>
-      </header>
+      <form onSubmit={addTodo}>
+        <input type="text" placeholder="Task" value={todoInput} onChange={handleInput}/>
+        <button>Add</button>
+      </form>
+
+      <ul>
+        {todos.map((todo, key) => (
+          <li key={key}>{ todo.title } <button onClick={() => deleteTodo(todo.id)}>Delete</button></li>
+        ))}
+      </ul>
     </div>
   )
 }
